@@ -111,7 +111,7 @@ function submit() {
 
                 <!-- Submit -->
                 <button type="submit" :disabled="form.processing"
-                    class="mt-6 cursor-pointer w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50">
+                    class="mt-6 cursor-pointer w-full bg-[#d71208] hover:bg-[#c31007] text-white font-semibold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50">
                     {{ form.processing ? 'Adding...' : 'Add Product' }}
                 </button>
 

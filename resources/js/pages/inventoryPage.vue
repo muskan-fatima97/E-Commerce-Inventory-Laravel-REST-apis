@@ -61,7 +61,7 @@ defineProps<{
                     </div>
                     <div class="mt-4 flex items-center justify-between">
                         <span class="text-red-600 font-bold text-lg">
-                            ${{ product.price }}
+                            Rs. {{ Number(product.price).toLocaleString() }}
                         </span>
                        
                     </div>
@@ -73,13 +73,6 @@ defineProps<{
             <p class="text-xl font-semibold">No products found</p>
             <p class="text-sm mt-1">Add some products to see them here</p>
         </div>
-
-        <!-- <div class="flex justify-center mt-10 gap-2">
-            <a v-for="link in products.links" :key="link.label" :href="link.url" v-html="link.label"
-                class="px-4 py-2 rounded-lg text-sm border" :class="link.active
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'"></a>
-        </div> -->
 
     </div>
 </template>

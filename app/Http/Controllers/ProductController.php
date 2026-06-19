@@ -11,13 +11,22 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $product=Product::latest()->paginate(10);
+        $query = Product::latest();
+
+    if ($request->has('category') && $request->category !== '') {
+        $query->where('category', $request->category);
+    }
+
+    $limit=$request->get('limit',8);
+    $products = $query->paginate($limit);
+        // $product=Product::latest()->paginate(10);
+        
         return response()->json([
             'success'=>true,
             'message'=> "Product fetched successfully",
-            'data'=>$product
+            'data'=>$products
         ]);
     }
 
@@ -86,5 +95,22 @@ class ProductController extends Controller
     public function create()
     {
         return Inertia::render('AddProduct');
+    }
+
+    public function storePage(){
+        return Inertia::render('Store');
+    }
+
+    public function homePage(){
+        return Inertia::render('Home');
+    }
+    
+    public function productDetailPage($id){
+
+    $product=Product::findOrFail($id);
+        return Inertia::render('ProductDetail',
+        [
+            'product' => $product
+        ]);
     }
 }
