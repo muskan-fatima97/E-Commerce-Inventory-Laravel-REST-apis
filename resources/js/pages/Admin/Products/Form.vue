@@ -1,31 +1,54 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 
 defineOptions({ layout: null })
+const props = defineProps<{
+    product?: any
+}>()
 
 const form = useForm({
-    name: '',
-    description: '',
-    price: '',
-    category: '',
-    brand: '',
-    size: '',
-    color: '',
-    stock_quantity: '',
+    name: props.product?.name ?? '',
+    description: props.product?.description ?? '',
+    price: props.product?.price ?? '',
+    category: props.product?.category ?? '',
+    brand: props.product?.brand ?? '',
+    size: props.product?.size ?? '',
+    color: props.product?.color ?? '',
+    stock_quantity: props.product?.stock_quantity ?? '',
     image: null as File | null,
+})
+
+// tracks whichever image should be shown: newly picked file, or existing stored one
+const newImagePreview = ref<string | null>(null)
+
+const displayedImage = computed(() => {
+    if (newImagePreview.value) return newImagePreview.value
+    if (props.product?.image) return '/storage/' + props.product.image
+    return null
 })
 
 function handleImage(e: Event) {
     const target = e.target as HTMLInputElement
     if (target.files && target.files[0]) {
         form.image = target.files[0]
+        newImagePreview.value = URL.createObjectURL(target.files[0])
     }
 }
 
 function submit() {
-    form.post('/products', {
-        forceFormData: true,
-    })
+    if (props.product) {
+        form.transform((data) => ({
+            ...data,
+            _method: 'PUT',
+        })).post(`/api/product/${props.product.id}`, {
+            forceFormData: true,
+        });
+    } else {
+        form.post('/products', {
+            forceFormData: true,
+        });
+    }
 }
 </script>
 
@@ -33,7 +56,7 @@ function submit() {
     <div class="min-h-screen bg-gray-100 flex items-center justify-center ">
         <div class="bg-white rounded-2xl shadow-md w-full max-w-3xl p-8">
 
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">Add New Product</h1>
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">{{ props.product ? 'Edit Product' : 'Add New Product' }}</h1>
 
             <form @submit.prevent="submit">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -112,7 +135,10 @@ function submit() {
                 <!-- Submit -->
                 <button type="submit" :disabled="form.processing"
                     class="mt-6 cursor-pointer w-full bg-[#d71208] hover:bg-[#c31007] text-white font-semibold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50">
-                    {{ form.processing ? 'Adding...' : 'Add Product' }}
+                    {{ form.processing
+    ? (props.product ? 'Updating...' : 'Adding...')
+    : (props.product ? 'Update Product' : 'Add Product')
+}}
                 </button>
 
             </form>

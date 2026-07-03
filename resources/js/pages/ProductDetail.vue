@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import axios from 'axios'
 import StoreNavbar from '@/components/StoreNavbar.vue'
 
 defineOptions({ layout: null })
 
-defineProps<{
+const props = defineProps<{
     product: {
         id: number
         name: string
@@ -17,6 +19,38 @@ defineProps<{
         image: string
     }
 }>()
+
+const quantity = ref(1)
+
+function increment() {
+    if (quantity.value < props.product.stock_quantity) {
+        quantity.value++
+    }
+}
+
+function decrement() {
+    if (quantity.value > 1) {
+        quantity.value--
+    }
+}
+
+const adding = ref(false)
+
+async function addToBag() {
+    adding.value = true
+    try {
+        await axios.post('/api/cart', {
+            product_id: props.product.id,
+            quantity: quantity.value,
+        })
+        alert('Product added to cart!')
+    } catch (error) {
+        console.error(error)
+        alert('Failed to add product to cart.')
+    } finally {
+        adding.value = false
+    }
+}
 </script>
 
 <template>
@@ -57,7 +91,6 @@ defineProps<{
                         {{ product.description }}
                     </p>
 
-                   
                     <div>
                         <p class="text-sm font-semibold text-gray-700 mb-1">Brand:</p>
                         <span class="bg-gray-900 text-white text-xs px-3 py-1 rounded">
@@ -88,12 +121,36 @@ defineProps<{
                         Category: {{ product.category }}
                     </p>
 
-                    <button
-                        class="w-full bg-gray-900 text-white font-semibold py-3 rounded-lg hover:bg-gray-700 transition mt-2">
-                        ADD TO BAG
-                    </button>
+                    <!-- Quantity Selector -->
+                    <div>
+                        <p class="text-sm font-semibold text-gray-700 mb-1">Quantity:</p>
+                        <div class="flex items-center gap-3">
+                            <button
+                                @click="decrement"
+                                type="button"
+                                class="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition cursor-pointer disabled:opacity-40"
+                                :disabled="quantity <= 1">
+                                −
+                            </button>
+                            <span class="w-10 text-center font-semibold text-gray-800">
+                                {{ quantity }}
+                            </span>
+                            <button
+                                @click="increment"
+                                type="button"
+                                class="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition cursor-pointer disabled:opacity-40"
+                                :disabled="quantity >= product.stock_quantity">
+                                +
+                            </button>
+                        </div>
+                    </div>
 
-                    
+                    <button
+                        @click="addToBag"
+                        :disabled="adding || product.stock_quantity === 0"
+                        class="w-full bg-gray-900 text-white font-semibold py-3 rounded-lg hover:bg-gray-700 transition mt-2 disabled:opacity-50 cursor-pointer">
+                        {{ product.stock_quantity === 0 ? 'OUT OF STOCK' : (adding ? 'ADDING...' : 'ADD TO BAG') }}
+                    </button>
 
                 </div>
             </div>

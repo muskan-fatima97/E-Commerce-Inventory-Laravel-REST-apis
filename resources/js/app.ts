@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
+import AdminLayout from './layouts/AdminLayout.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -13,16 +14,22 @@ createInertiaApp({
         switch (true) {
             case name === 'Welcome':
                 return null;
-            case name === 'inventoryPage':   
-                return null;
-            case name === 'AddProduct':
-                return null;
-            case name === 'Store':   
+            case name === 'Store':
                 return null;
             case name === 'Home':
                 return null;
             case name === 'ProductDetail':
                 return null;
+            case name === 'Cart':
+                return null;
+            case name === 'Checkout':
+                return null;
+            case name === 'OrderHistory':
+                return null;
+            case name === 'OrderConfirmation':
+                return null;
+            case name.startsWith('Admin/'):
+                return AdminLayout;
             case name.startsWith('auth/'):
                 return AuthLayout;
             case name.startsWith('settings/'):
