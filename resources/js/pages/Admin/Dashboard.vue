@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { Package, ShoppingBag, Clock, DollarSign, AlertTriangle } from 'lucide-vue-next'
 
+import axios from 'axios'
+import { Package, ShoppingBag, Clock, DollarSign, AlertTriangle } from 'lucide-vue-next'
+import { ref, onMounted, watch } from 'vue'
+   import OrdersStatusDoughnut from '@/components/charts/OrdersStatusDoughnut.vue'
+import RevenueLineChart from '@/components/charts/RevenueLineChart.vue'
+   import TopProductsBarChart from '@/components/charts/TopProductsBarChart.vue'
 interface Stats {
     totalProducts: number
     totalOrders: number
@@ -44,6 +49,73 @@ const statusColors: Record<string, string> = {
     delivered: 'bg-green-100 text-green-700',
     cancelled: 'bg-red-100 text-red-700',
 }
+
+const revenueDays = ref(30)
+const revenueLabels = ref<string[]>([])
+const revenueData = ref<number[]>([])
+const revenueLoading = ref(true)
+
+const statusLabels = ref<string[]>([])
+const statusData = ref<number[]>([])
+const statusLoading = ref(true)
+
+const topProductLabels = ref<string[]>([])
+const topProductData = ref<number[]>([])
+const topProductsLoading = ref(true)
+
+async function fetchRevenue() {
+    revenueLoading.value = true
+
+    try {
+        const res = await axios.get('/api/admin/analytics/revenue', {
+            params: { days: revenueDays.value },
+        })
+        revenueLabels.value = res.data.labels
+        revenueData.value = res.data.data
+    } catch (error) {
+        console.error(error)
+    } finally {
+        revenueLoading.value = false
+    }
+}
+
+async function fetchOrdersByStatus() {
+    statusLoading.value = true
+
+    try {
+        const res = await axios.get('/api/admin/analytics/orders-by-status')
+        statusLabels.value = res.data.labels
+        statusData.value = res.data.data
+    } catch (error) {
+        console.error(error)
+    } finally {
+        statusLoading.value = false
+    }
+}
+
+async function fetchTopProducts() {
+    topProductsLoading.value = true
+
+    try {
+        const res = await axios.get('/api/admin/analytics/top-products', {
+            params: { limit: 5 },
+        })
+        topProductLabels.value = res.data.labels
+        topProductData.value = res.data.data
+    } catch (error) {
+        console.error(error)
+    } finally {
+        topProductsLoading.value = false
+    }
+}
+
+watch(revenueDays, fetchRevenue)
+
+onMounted(() => {
+    fetchRevenue()
+    fetchOrdersByStatus()
+    fetchTopProducts()
+})
 </script>
 
 <template>
@@ -154,5 +226,50 @@ const statusColors: Record<string, string> = {
 
         </div>
 
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Revenue Trend -->
+            <div class="bg-white rounded-xl shadow-sm p-6 lg:col-span-2">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-gray-800">Revenue Trend</h3>
+                    <select v-model.number="revenueDays"
+                        class="text-gray-800 border border-gray-300 rounded-lg px-2 py-1 text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option :value="7">Last 7 days</option>
+                        <option :value="30">Last 30 days</option>
+                        <option :value="90">Last 90 days</option>
+                    </select>
+                </div>
+
+                <div v-if="revenueLoading" class="h-72 flex items-center justify-center text-gray-400 text-sm">
+                    Loading...
+                </div>
+                <RevenueLineChart v-else :labels="revenueLabels" :data="revenueData" />
+            </div>
+
+            <!-- Orders by Status -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="font-semibold text-gray-800 mb-4">Orders by Status</h3>
+
+                <div v-if="statusLoading" class="h-64 flex items-center justify-center text-gray-400 text-sm">
+                    Loading...
+                </div>
+                <OrdersStatusDoughnut v-else :labels="statusLabels" :data="statusData" />
+            </div>
+
+        </div>
+
+        <!-- Top Products -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Top 5 Best-Selling Products</h3>
+
+            <div v-if="topProductsLoading" class="h-64 flex items-center justify-center text-gray-400 text-sm">
+                Loading...
+            </div>
+            <p v-else-if="topProductLabels.length === 0" class="text-sm text-gray-400 py-6 text-center">
+                No sales data yet
+            </p>
+            <TopProductsBarChart v-else :labels="topProductLabels" :data="topProductData" />
+        </div>
+        
     </div>
 </template>

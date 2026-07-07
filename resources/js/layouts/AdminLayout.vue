@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { router, usePage } from '@inertiajs/vue3'
 import {
     LayoutDashboard,
     Package,
@@ -6,14 +7,14 @@ import {
     Menu,
     X,
     Store,
+    LogOut,
 } from 'lucide-vue-next'
 import { ref } from 'vue'
-import { router, usePage } from '@inertiajs/vue3'
 
 
 const page = usePage()
 const sidebarOpen = ref(true)
-
+// Ab make an api of this dashboard so that if we want to access the stats of orders in graphical form we can with logging in
 const navItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Products', href: '/inventory', icon: Package },
@@ -22,6 +23,10 @@ const navItems = [
 
 function isActive(href: string) {
     return page.url === href || page.url.startsWith(href + '/')
+}
+
+function logout() {
+    router.post('/logout')
 }
 </script>
 
@@ -44,7 +49,7 @@ function isActive(href: string) {
             </div>
 
             <nav class="flex-1 px-2 py-4 flex flex-col gap-1">
-               <a 
+                <a
                     v-for="item in navItems"
                     :key="item.name"
                     :href="item.href"
@@ -58,7 +63,7 @@ function isActive(href: string) {
                 </a>
             </nav>
 
-            <div class="px-2 py-4 border-t border-gray-800">
+            <div class="px-2 py-4 border-t border-gray-800 flex flex-col gap-1">
                 <a
                     href="/store"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition"
@@ -66,14 +71,26 @@ function isActive(href: string) {
                     <Store class="w-5 h-5 shrink-0" />
                     <span v-if="sidebarOpen">View Store</span>
                 </a>
+
+                <button
+                    @click="logout"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-gray-800 hover:text-red-300 transition cursor-pointer w-full"
+                >
+                    <LogOut class="w-5 h-5 shrink-0" />
+                    <span v-if="sidebarOpen">Logout</span>
+                </button>
             </div>
         </aside>
 
         <!-- Main content -->
         <div class="flex-1 min-w-0">
-           
+            <!-- <header class="bg-white border-b border-gray-200 px-8 py-4">
+                <h1 class="text-lg font-semibold text-gray-800">
+                    <slot name="header">Admin Panel</slot>
+                </h1>
+            </header> -->
 
-            <main class="">
+            <main class="p-8">
                 <slot />
             </main>
         </div>

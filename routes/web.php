@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AnalyticalChartsController;
 
 // Public store routes
 Route::get('/', [ProductController::class, 'HomePage'])->name('home');
@@ -37,6 +38,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/orders', [OrderController::class, 'index']);
     Route::get('/admin/orders/{id}', [OrderController::class, 'show']);
     Route::patch('/api/orders/{id}/status', [OrderController::class, 'updateStatus']);
+
+    Route::get('/api/admin/analytics/revenue', [AnalyticalChartsController::class, 'revenue']);
+    Route::get('/api/admin/analytics/orders-by-status', [AnalyticalChartsController::class, 'ordersByStatus']);
+    Route::get('/api/admin/analytics/top-products', [AnalyticalChartsController::class, 'topProducts']);
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

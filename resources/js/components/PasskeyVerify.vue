@@ -37,11 +37,11 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
 
 <template>
     <div v-if="isSupported">
-        <div class="grid gap-2">
+        <!-- <div class="grid gap-2">
             <Button
                 type="button"
                 variant="outline"
-                class="w-full"
+                class="w-full text-black bg-gray-50"
                 @click="verify"
                 :disabled="isLoading"
             >
@@ -57,9 +57,9 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
             <div v-if="error" class="text-center">
                 <InputError :message="error" />
             </div>
-        </div>
+        </div> -->
 
-        <div class="relative my-6">
+        <!-- <div class="relative my-6">
             <div class="absolute inset-0 flex items-center">
                 <Separator class="w-full" />
             </div>
@@ -68,6 +68,6 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
                     {{ props.separator ?? 'Or continue with email' }}
                 </span>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
