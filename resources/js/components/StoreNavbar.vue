@@ -29,66 +29,70 @@ function logout() {
 </script>
 
 <template>
-    <nav class="bg-gray-50 px-8 py-4 flex items-center justify-between relative">
+    <nav class="bg-gray-50 px-4 lg:px-8 py-3 lg:py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-0 relative">
 
-        <a href="/store" class="text-[#d71208] font-bold text-2xl tracking-wide">
-            MyStore
-        </a>
+        <div class="flex items-center justify-between w-full lg:w-auto lg:contents">
 
-        <div class="flex-1 mx-24 border rounded-sm border-gray-300">
-            <input type="text" placeholder="Search for products..."
-                class="w-full px-4 py-2 rounded-lg text-sm text-gray-800 focus:outline-none" />
-        </div>
-
-        <div class="flex items-center gap-3">
-
-            <a href="/cart" class="relative p-2 rounded-lg hover:bg-gray-200 transition">
-                <ShoppingCart class="w-6 h-6 text-gray-700" />
-                <span class="absolute -top-1 -right-1 bg-[#d71208] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                    {{ cartCount }}
-                </span>
+            <a href="/store" class="text-[#d71208] font-bold text-xl lg:text-2xl tracking-wide">
+                Closyyy
             </a>
 
-            <!-- Logged in -->
-            <div v-if="user" class="relative">
-                <button @click="menuOpen = !menuOpen"
-                    class="flex items-center gap-2 bg-black text-white font-semibold px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition cursor-pointer">
-                    <User class="w-4 h-4" />
-                    {{ user.name.split(' ')[0] }}
-                </button>
+            <div class="flex items-center gap-3 lg:order-3">
 
-                <div v-if="menuOpen" @click.outside="menuOpen = false"
-                    class="absolute right-0 top-12 bg-white shadow-lg rounded-lg py-2 w-48 border border-gray-100 z-10">
+                <a href="/cart" class="relative p-2 rounded-lg hover:bg-gray-200 transition">
+                    <ShoppingCart class="w-6 h-6 text-gray-700" />
+                    <span class="absolute -top-1 -right-1 bg-[#d71208] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                        {{ cartCount }}
+                    </span>
+                </a>
 
-                    <a v-if="isAdmin" href="/admin"
-                        class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                        <Package class="w-4 h-4" /> Admin Panel
-                    </a>
-
-                    <a href="/orders"
-                        class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                        <Package class="w-4 h-4" /> My Orders
-                    </a>
-
-                    <button @click="logout"
-                        class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50 cursor-pointer">
-                        <LogOut class="w-4 h-4" /> Logout
+                <!-- Logged in -->
+                <div v-if="user" class="relative">
+                    <button @click="menuOpen = !menuOpen"
+                        class="flex items-center gap-2 bg-black text-white font-semibold px-3 lg:px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition cursor-pointer">
+                        <User class="w-4 h-4" />
+                        <span class="hidden sm:inline">{{ user.name.split(' ')[0] }}</span>
                     </button>
+
+                    <div v-if="menuOpen" @click.outside="menuOpen = false"
+                        class="absolute right-0 top-12 bg-white shadow-lg rounded-lg py-2 w-48 border border-gray-100 z-20">
+
+                        <a v-if="isAdmin" href="/admin"
+                            class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <Package class="w-4 h-4" /> Admin Panel
+                        </a>
+
+                        <a href="/orders"
+                            class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <Package class="w-4 h-4" /> My Orders
+                        </a>
+
+                        <button @click="logout"
+                            class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50 cursor-pointer">
+                            <LogOut class="w-4 h-4" /> Logout
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Guest -->
-            <div v-else class="flex items-center gap-2">
-                <a href="/login"
-                    class="text-gray-700 font-semibold px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition">
-                    Login
-                </a>
-                <a href="/register"
-                    class="bg-black text-white font-semibold px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition">
-                    Register
-                </a>
-            </div>
+                <!-- Guest -->
+                <!-- Guest -->
+<div v-else class="flex items-center gap-1.5 sm:gap-2">
+    <a href="/login"
+        class="text-gray-700 font-semibold px-2.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm hover:bg-gray-200 transition whitespace-nowrap">
+        Login
+    </a>
+    <a href="/register"
+        class="bg-black text-white font-semibold px-2.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm hover:bg-gray-800 transition whitespace-nowrap">
+        Register
+    </a>
+</div>
 
+            </div>
+        </div>
+
+        <div class="w-full lg:flex-1 lg:mx-24 border rounded-sm border-gray-300 lg:order-2">
+            <input type="text" placeholder="Search for products..."
+                class="w-full px-4 py-2 rounded-lg text-sm text-gray-800 focus:outline-none" />
         </div>
 
     </nav>

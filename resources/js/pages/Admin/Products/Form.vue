@@ -13,7 +13,8 @@ const form = useForm({
     price: props.product?.price ?? '',
     category: props.product?.category ?? '',
     brand: props.product?.brand ?? '',
-    size: props.product?.size ?? '',
+    // size: props.product?.size ?? '',
+        sizes: props.product?.sizes ?? [] as string[], 
     color: props.product?.color ?? '',
     stock_quantity: props.product?.stock_quantity ?? '',
     image: null as File | null,
@@ -23,8 +24,13 @@ const form = useForm({
 const newImagePreview = ref<string | null>(null)
 
 const displayedImage = computed(() => {
-    if (newImagePreview.value) return newImagePreview.value
-    if (props.product?.image) return '/storage/' + props.product.image
+
+    if (newImagePreview.value) 
+    return newImagePreview.value
+
+    if (props.product?.image) 
+    return '/storage/' + props.product.image
+
     return null
 })
 
@@ -53,8 +59,8 @@ function submit() {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-100 flex items-center justify-center ">
-        <div class="bg-white rounded-2xl shadow-md w-full max-w-3xl p-8">
+    <div class=" ">
+        <div class="">
 
             <h1 class="text-2xl font-bold text-gray-800 mb-6">{{ props.product ? 'Edit Product' : 'Add New Product' }}</h1>
 
@@ -106,16 +112,21 @@ function submit() {
                             class="text-black w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
                         <p v-if="form.errors.stock_quantity" class="text-red-500 text-xs mt-1">{{ form.errors.stock_quantity }}</p>
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Size</label>
-                        <div class="flex gap-4">
+                     <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sizes (select all that apply)</label>
+                        <div class="flex gap-4 flex-wrap">
                             <label v-for="s in ['S', 'M', 'L', 'XL', 'XXL']" :key="s"
                                 class="flex items-center gap-1 cursor-pointer">
-                                <input type="radio" :value="s" v-model="form.size" class="accent-blue-600 cursor-pointer"/>
+                                <input
+                                    type="checkbox"
+                                    :value="s"
+                                    v-model="form.sizes"
+                                    class="accent-blue-600 cursor-pointer"
+                                />
                                 <span class="text-sm text-black">{{ s }}</span>
                             </label>
                         </div>
-                        <p v-if="form.errors.size" class="text-red-500 text-xs mt-1">{{ form.errors.size }}</p>
+                        <p v-if="form.errors.sizes" class="text-red-500 text-xs mt-1">{{ form.errors.sizes }}</p>
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -134,7 +145,7 @@ function submit() {
 
                 <!-- Submit -->
                 <button type="submit" :disabled="form.processing"
-                    class="mt-6 cursor-pointer w-full bg-[#d71208] hover:bg-[#c31007] text-white font-semibold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50">
+                    class="mt-6 cursor-pointer w-md bg-[#d71208] hover:bg-[#c31007] text-white font-semibold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-50">
                     {{ form.processing
     ? (props.product ? 'Updating...' : 'Adding...')
     : (props.product ? 'Update Product' : 'Add Product')

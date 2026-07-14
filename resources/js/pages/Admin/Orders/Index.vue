@@ -45,7 +45,6 @@ const statusColors: Record<string, string> = {
 }
 
 function applyFilter() {
-
     router.get('/admin/orders', { status: statusFilter.value }, { preserveState: true })
 }
 
@@ -71,7 +70,7 @@ async function updateStatus(order: Order, newStatus: string) {
 
     <div class="flex flex-col gap-6 p-2">
 
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
             <h2 class="text-xl font-bold text-gray-800">All Orders ({{ orders.total }})</h2>
 
             <select v-model="statusFilter" @change="applyFilter"
@@ -81,64 +80,113 @@ async function updateStatus(order: Order, newStatus: string) {
             </select>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <table class="w-full text-sm text-left">
-                <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
-                    <tr>
-                        <th class="px-4 py-3">Order #</th>
-                        <th class="px-4 py-3">Customer</th>
-                        <th class="px-4 py-3">City</th>
-                        <th class="px-4 py-3">Items</th>
-                        <th class="px-4 py-3">Total</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3">Date</th>
-                        <th class="px-4 py-3">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    <tr v-for="order in orders.data" :key="order.id" class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-semibold text-gray-800">
-                            <a :href="`/admin/orders/${order.id}`" class="text-blue-600 hover:underline">
-                                #{{ order.id }}
-                            </a>
-                        </td>
-                        <td class="px-4 py-3">
-                            <p class="text-gray-800 font-medium">{{ order.customer_name }}</p>
-                            <p class="text-gray-400 text-xs">{{ order.customer_phone }}</p>
-                        </td>
-                        <td class="px-4 py-3 text-gray-600">{{ order.city }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ order.items.length }} item(s)</td>
-                        <td class="px-4 py-3 font-semibold text-gray-800">
-                            Rs. {{ Number(order.total_amount).toLocaleString() }}
-                        </td>
-                        <td class="px-4 py-3">
-                            <span class="text-xs px-2 py-1 rounded-full font-medium capitalize"
-                                :class="statusColors[order.status]">
-                                {{ order.status }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-gray-500 text-xs">
-                            {{ new Date(order.created_at).toLocaleDateString() }}
-                        </td>
-                        <td class="px-4 py-3">
-                            <select :value="order.status"
-                                @change="updateStatus(order, ($event.target as HTMLSelectElement).value)"
-                                :disabled="updatingId === order.id"
-                                class="text-gray-800 border border-gray-300 rounded-lg px-2 py-1 text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
-                                <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
-                            </select>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Desktop table (unchanged, lg and above) -->
+        <div class="hidden lg:block bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+                        <tr>
+                            <th class="px-4 py-3">ID</th>
+                            <th class="px-4 py-3">Customer</th>
+                            <th class="px-4 py-3">City</th>
+                            <th class="px-4 py-3">Items</th>
+                            <th class="px-4 py-3">Total</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3">Date</th>
+                            <th class="px-4 py-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr v-for="order in orders.data" :key="order.id" class="hover:bg-gray-50">
+                            <td class="px-4 py-3 font-semibold text-gray-800">
+                                <a :href="`/admin/orders/${order.id}`" class="text-blue-600 hover:underline">
+                                    {{ order.id }}
+                                </a>
+                            </td>
+                            <td class="px-4 py-3">
+                                <p class="text-gray-800 font-medium">{{ order.customer_name }}</p>
+                                <p class="text-gray-400 text-xs">{{ order.customer_phone }}</p>
+                            </td>
+                            <td class="px-4 py-3 text-gray-600">{{ order.city }}</td>
+                            <td class="px-4 py-3 text-gray-600">{{ order.items.length }} item(s)</td>
+                            <td class="px-4 py-3 font-semibold text-gray-800">
+                                Rs. {{ Number(order.total_amount).toLocaleString() }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="text-xs px-2 py-1 rounded-full font-medium capitalize"
+                                    :class="statusColors[order.status]">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-500 text-xs">
+                                {{ new Date(order.created_at).toLocaleDateString() }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <select :value="order.status"
+                                    @change="updateStatus(order, ($event.target as HTMLSelectElement).value)"
+                                    :disabled="updatingId === order.id"
+                                    class="text-gray-800 border border-gray-300 rounded-lg px-2 py-1 text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                                    <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <div v-if="orders.data.length === 0" class="text-center py-16 text-gray-400">
                 <p class="font-semibold">No orders found</p>
             </div>
         </div>
 
+        <!-- Mobile/tablet card list (below lg) -->
+        <div class="lg:hidden flex flex-col gap-4">
+            <div v-for="order in orders.data" :key="order.id"
+                class="bg-white rounded-xl shadow-sm p-4 flex flex-col gap-3">
+
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <a :href="`/admin/orders/${order.id}`" class="text-blue-600 hover:underline font-semibold">
+                        {{ order.id }}
+                        </a>
+                        <p class="text-gray-800 text-sm font-medium mt-1">{{ order.customer_name }}</p>
+                        <p class="text-gray-400 text-xs">{{ order.customer_phone }}</p>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full font-medium capitalize shrink-0"
+                        :class="statusColors[order.status]">
+                        {{ order.status }}
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between text-sm text-gray-600">
+                    <span>{{ order.city }}</span>
+                    <span>{{ order.items.length }} item(s)</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <span class="font-semibold text-gray-800">
+                        Rs. {{ Number(order.total_amount).toLocaleString() }}
+                    </span>
+                    <span class="text-gray-500 text-xs">
+                        {{ new Date(order.created_at).toLocaleDateString() }}
+                    </span>
+                </div>
+
+                <select :value="order.status"
+                    @change="updateStatus(order, ($event.target as HTMLSelectElement).value)"
+                    :disabled="updatingId === order.id"
+                    class="text-gray-800 border border-gray-300 rounded-lg px-2 py-1.5 text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 w-full">
+                    <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
+                </select>
+            </div>
+
+            <div v-if="orders.data.length === 0" class="text-center py-16 text-gray-400 bg-white rounded-xl shadow-sm">
+                <p class="font-semibold">No orders found</p>
+            </div>
+        </div>
+
         <!-- Pagination -->
-        <div class="flex justify-center gap-1">
+        <div class="flex justify-center flex-wrap gap-1">
             <template v-for="link in orders.links" :key="link.label">
                 <button v-if="link.url" @click="router.get(link.url, {}, { preserveState: true })" v-html="link.label"
                     class="px-3 py-1.5 text-sm rounded-lg border cursor-pointer"

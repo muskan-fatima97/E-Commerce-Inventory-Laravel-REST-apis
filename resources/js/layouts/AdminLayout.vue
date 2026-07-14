@@ -13,8 +13,9 @@ import { ref } from 'vue'
 
 
 const page = usePage()
-const sidebarOpen = ref(true)
-// Ab make an api of this dashboard so that if we want to access the stats of orders in graphical form we can with logging in
+const sidebarOpen = ref(true)          // desktop collapse toggle (unchanged)
+const mobileSidebarOpen = ref(false)   // mobile/tablet drawer toggle (new)
+
 const navItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Products', href: '/inventory', icon: Package },
@@ -22,7 +23,15 @@ const navItems = [
 ]
 
 function isActive(href: string) {
+    if (href === '/admin') {
+        return page.url === '/admin'
+    }
     return page.url === href || page.url.startsWith(href + '/')
+}
+
+function toggleSidebar() {
+    sidebarOpen = !sidebarOpen
+    mobileSidebarOpen.value = false
 }
 
 function logout() {
@@ -31,24 +40,34 @@ function logout() {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50 flex">
+    <div class="h-screen bg-gray-50 flex overflow-hidden">
+
+        <!-- Mobile/tablet backdrop -->
+        <div
+            v-if="mobileSidebarOpen"
+            @click="mobileSidebarOpen = false"
+            class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        ></div>
 
         <!-- Sidebar -->
         <aside
-            :class="sidebarOpen ? 'w-64' : 'w-20'"
-            class="bg-gray-900 text-white flex flex-col transition-all duration-300 shrink-0"
+            :class="[
+                sidebarOpen ? 'lg:w-64' : 'lg:w-20',
+                mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+            ]"
+            class="fixed lg:static inset-y-0 left-0 z-50 w-64 h-screen bg-gray-900 text-white flex flex-col transition-all duration-300 shrink-0"
         >
             <div class="flex items-center justify-between px-4 py-5 border-b border-gray-800">
                 <span v-if="sidebarOpen" class="text-lg font-bold text-[#d71208] tracking-wide">
-                    MyStore Admin
+                    Admin Panel
                 </span>
-                <button @click="sidebarOpen = !sidebarOpen" class="cursor-pointer text-gray-400 hover:text-white">
+                <button @click="toggleSidebar" class="cursor-pointer text-gray-400 hover:text-white">
                     <Menu v-if="!sidebarOpen" class="w-5 h-5" />
                     <X v-else class="w-5 h-5" />
                 </button>
             </div>
 
-            <nav class="flex-1 px-2 py-4 flex flex-col gap-1">
+            <nav class="flex-1 px-2 py-4 flex flex-col gap-1 overflow-y-auto">
                 <a
                     v-for="item in navItems"
                     :key="item.name"
@@ -83,14 +102,18 @@ function logout() {
         </aside>
 
         <!-- Main content -->
-        <div class="flex-1 min-w-0">
-            <!-- <header class="bg-white border-b border-gray-200 px-8 py-4">
-                <h1 class="text-lg font-semibold text-gray-800">
-                    <slot name="header">Admin Panel</slot>
-                </h1>
-            </header> -->
+        <div class="flex-1 min-w-0 h-screen overflow-y-auto">
 
-            <main class="p-8">
+            <!-- Mobile/tablet top bar -->
+            <div class="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 sticky top-0 z-30">
+                <button @click="mobileSidebarOpen = true" class="text-gray-600 cursor-pointer">
+                    <Menu class="w-6 h-6" />
+                </button>
+                <span class="text-sm font-semibold text-gray-800">Admin Panel</span>
+                <div class="w-6"></div>
+            </div>
+
+            <main class="p-4 lg:p-8">
                 <slot />
             </main>
         </div>

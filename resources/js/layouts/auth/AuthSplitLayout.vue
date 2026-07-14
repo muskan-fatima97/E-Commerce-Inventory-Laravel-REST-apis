@@ -1,11 +1,4 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
-import { home } from '@/routes';
-
-const page = usePage();
-const name = page.props.name;
-
 defineProps<{
     title?: string;
     description?: string;
@@ -14,34 +7,37 @@ defineProps<{
 
 <template>
     <div
-        class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0"
+        class="flex h-dvh flex-col items-center justify-center p-6 md:p-10"
+        style="background: linear-gradient(135deg, #2563eb 0%, #d71208 55%, #b90d05 100%);"
     >
-        <div
-            class="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r"
-        >
-            <div class="absolute inset-0 bg-zinc-900" />
-            <Link
-                :href="home()"
-                class="relative z-20 flex items-center text-lg font-medium"
-            >
-                <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
-                {{ name }}
-            </Link>
-        </div>
-        <div class="lg:p-8">
-            <div
-                class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"
-            >
-                <div class="flex flex-col space-y-2 text-center">
-                    <h1 class="text-xl font-medium tracking-tight" v-if="title">
+        <div class="grid w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-xl lg:grid-cols-2">
+
+            <!-- Left: form column -->
+            <div class="flex flex-col justify-center px-8 py-10 md:px-10">
+                <div class="mb-6">
+                    <h1 v-if="title" class="text-3xl font-bold leading-tight text-black">
                         {{ title }}
                     </h1>
-                    <p class="text-sm text-muted-foreground" v-if="description">
+                    <p v-if="description" class="mt-2 text-sm text-gray-500">
                         {{ description }}
                     </p>
                 </div>
                 <slot />
             </div>
+
+            <!-- Right: image column with overlay quote -->
+            <div class="relative hidden min-h-[420px] lg:block">
+                <img
+                    src="/img_1.png"
+                    alt=""
+                    class="absolute inset-0 h-full w-full object-cover"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                <p class="absolute bottom-8 left-8 right-8 text-2xl font-bold leading-snug text-white">
+                    "Give your clothes a new life — and earn from it."
+                </p>
+            </div>
+
         </div>
     </div>
 </template>

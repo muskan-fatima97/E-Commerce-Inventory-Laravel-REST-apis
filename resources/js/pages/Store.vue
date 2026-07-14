@@ -85,7 +85,7 @@ onMounted(() => {
                             {{ product.brand }}
                         </span>
                          <span class="text-xs text-gray-400 border border-gray-200 px-2 py-1 rounded">
-                                {{ product.size }}
+                                Size: {{ product.sizes?.join(', ') }}
                             </span>
                         </div>
                         <h3 class="text-md font-semibold text-gray-800 mb-1">

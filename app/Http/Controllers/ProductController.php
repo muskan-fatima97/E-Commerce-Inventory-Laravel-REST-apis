@@ -41,7 +41,9 @@ class ProductController extends Controller
             'price'          => 'required|numeric|min:0',
             'category'       => 'required|string',
             'brand'          => 'required|string|max:255',
-            'size'           => 'required|string',
+            // 'size'           => 'required|string',
+            'sizes' => 'required|array|min:1',
+        'sizes.*' => 'in:S,M,L,XL,XXL',
             'color'          => 'required|string|max:255',
             'stock_quantity' => 'required|integer|min:0',
             'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -85,7 +87,9 @@ class ProductController extends Controller
             'price'          => 'sometimes|required|numeric|min:0',
             'category'       => 'sometimes|required|string',
             'brand'          => 'sometimes|required|string|max:255',
-            'size'           => 'sometimes|required|string',
+            // 'size'           => 'sometimes|required|string',
+            'sizes' => 'required|array|min:1',
+        'sizes.*' => 'in:S,M,L,XL,XXL',
             'color'          => 'sometimes|required|string|max:255',
             'stock_quantity' => 'sometimes|required|integer|min:0',
             'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -137,14 +141,36 @@ class ProductController extends Controller
     /**
      * Admin: Inventory listing page
      */
-    public function inventoryPage()
-    {
-        $products = Product::latest()->paginate(10);
+    // public function inventoryPage()
+    // {
+    //     $products = Product::latest()->paginate(10);
 
-        return Inertia::render('Admin/Products/Index', [
-            'products' => $products
-        ]);
+    //     return Inertia::render('Admin/Products/Index', [
+    //         'products' => $products
+    //     ]);
+    // }
+    public function inventoryPage(Request $request)
+{
+    $query = Product::latest();
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('brand', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%")
+              ->orWhere('category', 'like', "%{$search}%")
+              ->orWhere('color', 'like', "%{$search}%");
+        });
     }
+
+    $products = $query->paginate(10)->withQueryString();
+
+    return Inertia::render('Admin/Products/Index', [
+        'products' => $products,
+        'filters'  => $request->only('search'),
+    ]);
+}
 
     /**
      * Admin: Add product form
