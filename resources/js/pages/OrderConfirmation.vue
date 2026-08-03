@@ -54,7 +54,12 @@ defineProps<{
                     </div>
                 </div>
 
-                <p class="text-sm text-gray-500 mb-4">Payment Method: <span class="font-semibold">Cash on Delivery</span></p>
+                <p class="text-gray-500 mb-4">
+    Payment Method: <span class="font-semibold text-gray-800">
+        {{ order.payment_method === 'stripe' ? 'Card Payment' : 'Cash on Delivery' }}
+    </span>
+    <span v-if="order.payment_status === 'paid'" class="ml-2 text-green-600 font-semibold">✓ Paid</span>
+</p>
 
                 <a href="/store" class="inline-block bg-gray-900 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-700 transition">
                     Continue Shopping

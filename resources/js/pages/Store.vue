@@ -75,7 +75,7 @@ onMounted(() => {
                     class="bg-white rounded-xl border border-gray-200 hover:shadow-lg transition duration-300 flex flex-col overflow-hidden">
                     <div class="w-full h-64 bg-gray-100 overflow-hidden">
                         <img :src="'/storage/' + product.image" :alt="product.name"
-                            class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            class="w-full h-full object-contain hover:scale-105 transition-transform duration-300" />
                     </div>
 
                     <div class="p-4 flex flex-col flex-1">

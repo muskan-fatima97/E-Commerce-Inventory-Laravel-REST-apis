@@ -6,7 +6,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnalyticalChartsController;
-
+use App\Http\Controllers\StripeController;
 // Public store routes
 Route::get('/', [ProductController::class, 'HomePage'])->name('home');
 Route::get('/store', [ProductController::class, 'storePage']);
@@ -23,6 +23,13 @@ Route::get('/api/cart/count', [CartController::class, 'count']);
 Route::get('/checkout', [OrderController::class, 'checkoutPage']);
 Route::post('/api/orders', [OrderController::class, 'store']);
 Route::get('/order/{id}/confirmation', [OrderController::class, 'confirmation']);
+
+// Customer-facing Stripe routes 
+// Stripe redirect callbacks (customer-facing, no auth needed)
+Route::get('/stripe/checkout-success', [StripeController::class, 'checkoutSuccess'])->name('stripe.checkout-success');
+Route::get('/stripe/checkout-cancel', [StripeController::class, 'checkoutCancel'])->name('stripe.checkout-cancel');
+Route::post('/api/stripe/checkout-session', [StripeController::class, 'createCheckoutSession'])->name('stripe.checkout-session');
+
 
 // Admin — protected
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -42,6 +49,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/api/admin/analytics/revenue', [AnalyticalChartsController::class, 'revenue']);
     Route::get('/api/admin/analytics/orders-by-status', [AnalyticalChartsController::class, 'ordersByStatus']);
     Route::get('/api/admin/analytics/top-products', [AnalyticalChartsController::class, 'topProducts']);
+   
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

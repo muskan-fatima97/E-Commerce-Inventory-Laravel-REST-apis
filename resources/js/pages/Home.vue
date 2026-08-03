@@ -75,7 +75,7 @@ onMounted(async () => {
                         class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition cursor-pointer">
                         <div class="h-40 sm:h-52 lg:h-64 bg-gray-100 overflow-hidden">
                             <img :src="'/storage/' + product.image" :alt="product.name"
-                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                                class="w-full h-full object-contain hover:scale-105 transition-transform duration-300" />
                         </div>
                          <div class="px-3 py-3 lg:py-5">
                             <p class="text-[#d71208] font-bold text-sm lg:text-md">Rs. {{ Number(product.price ).toLocaleString()}}</p>
@@ -100,7 +100,7 @@ onMounted(async () => {
                         class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition cursor-pointer">
                         <div class="h-40 sm:h-52 lg:h-64 bg-gray-100 overflow-hidden">
                             <img :src="'/storage/' + product.image" :alt="product.name"
-                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                                class="w-full h-full object-contain hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div class="px-3 py-3 lg:py-5">
                             <p class="text-[#d71208] font-bold text-sm lg:text-md">Rs. {{ Number(product.price ).toLocaleString()}}</p>
@@ -125,10 +125,10 @@ onMounted(async () => {
                         class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition cursor-pointer">
                         <div class="h-40 sm:h-52 lg:h-64 bg-gray-100 overflow-hidden">
                             <img :src="'/storage/' + product.image" :alt="product.name"
-                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                                class="w-full h-full object-contain hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div class="px-3 py-3 lg:py-5">
-                            <p class="text-[#d71208] font-bold text-sm lg:text-md">Rs.{{ product.price }}</p>
+                            <p class="text-[#d71208] font-bold text-sm lg:text-md">Rs. {{ Number(product.price ).toLocaleString()}}</p>
                             <p class="text-gray-700 text-sm lg:text-md mt-1 line-clamp-2">{{ product.name }}</p>
                             <p class="text-gray-400 text-xs lg:text-md mt-1">{{ product.brand }}</p>
                         </div>

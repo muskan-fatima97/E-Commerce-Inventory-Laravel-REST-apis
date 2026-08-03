@@ -31,6 +31,7 @@ const form = ref({
     customer_phone: '',
     shipping_address: '',
     city: '',
+    payment_method: 'cod' as 'cod' | 'stripe',
 })
 
 const errors = ref<Record<string, string>>({})
@@ -42,11 +43,22 @@ async function placeOrder() {
 
     try {
         const response = await axios.post('/api/orders', form.value)
+
+        if (form.value.payment_method === 'stripe') {
+            window.location.href = response.data.checkout_url
+            return
+        }
+
         const orderId = response.data.data.id
         router.visit(`/order/${orderId}/confirmation`)
+
     } catch (error: any) {
         if (error.response?.status === 422) {
             errors.value = error.response.data.errors ?? {}
+
+            if (error.response.data.message && Object.keys(errors.value).length === 0) {
+                alert(error.response.data.message)
+            }
         } else {
             alert(error.response?.data?.message ?? 'Failed to place order.')
         }
@@ -106,13 +118,40 @@ async function placeOrder() {
                             <p v-if="errors.city" class="text-red-500 text-xs mt-1">{{ errors.city[0] }}</p>
                         </div>
 
-                        <div class="bg-gray-50 rounded-lg p-3 text-sm text-gray-600">
-                            Payment Method: <span class="font-semibold text-gray-800">Cash on Delivery</span>
-                        </div>
+                       
+                        <!-- Payment Method Selection -->
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+    <div class="flex flex-col gap-2">
+
+        <label class="flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer transition"
+            :class="form.payment_method === 'cod' ? 'border-[#d71208] bg-red-50' : 'border-gray-300'">
+            <input type="radio" value="cod" v-model="form.payment_method" class="accent-[#d71208]" />
+            <div>
+                <p class="text-sm font-semibold text-gray-800">Cash on Delivery</p>
+                <p class="text-xs text-gray-500">Pay with cash when your order arrives</p>
+            </div>
+        </label>
+
+        <label class="flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer transition"
+            :class="form.payment_method === 'stripe' ? 'border-[#d71208] bg-red-50' : 'border-gray-300'">
+            <input type="radio" value="stripe" v-model="form.payment_method" class="accent-[#d71208]" />
+            <div>
+                <p class="text-sm font-semibold text-gray-800">Pay with Card</p>
+                <p class="text-xs text-gray-500">Secure payment via Stripe</p>
+            </div>
+        </label>
+
+    </div>
+    <p v-if="errors.payment_method" class="text-red-500 text-xs mt-1">{{ errors.payment_method[0] }}</p>
+</div>
 
                         <button type="submit" :disabled="submitting"
                             class="mt-2 w-full bg-[#d71208] hover:bg-[#c31007] text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 cursor-pointer">
-                            {{ submitting ? 'Placing Order...' : 'Place Order' }}
+                            {{ submitting
+    ? (form.payment_method === 'stripe' ? 'Redirecting to Stripe...' : 'Placing Order...')
+    : (form.payment_method === 'stripe' ? 'Proceed to Payment' : 'Place Order')
+}}
                         </button>
 
                     </form>

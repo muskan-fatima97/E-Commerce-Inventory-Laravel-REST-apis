@@ -17,6 +17,8 @@ interface Order {
     city: string
     total_amount: string
     status: string
+    payment_method: string
+    payment_status: string
     created_at: string
     items: OrderItem[]
 }
@@ -42,6 +44,17 @@ const statusColors: Record<string, string> = {
     shipped: 'bg-purple-100 text-purple-700',
     delivered: 'bg-green-100 text-green-700',
     cancelled: 'bg-red-100 text-red-700',
+}
+
+const paymentStatusColors: Record<string, string> = {
+    paid: 'bg-green-100 text-green-700',
+    unpaid: 'bg-yellow-100 text-yellow-700',
+    cancelled: 'bg-red-100 text-red-700',
+}
+
+function paymentLabel(order: Order) {
+    const method = order.payment_method === 'stripe' ? 'Card' : 'COD'
+    return `${method} · ${order.payment_status}`
 }
 
 function applyFilter() {
@@ -91,6 +104,7 @@ async function updateStatus(order: Order, newStatus: string) {
                             <th class="px-4 py-3">City</th>
                             <th class="px-4 py-3">Items</th>
                             <th class="px-4 py-3">Total</th>
+                            <th class="px-4 py-3">Payment</th>
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Date</th>
                             <th class="px-4 py-3">Action</th>
@@ -111,6 +125,12 @@ async function updateStatus(order: Order, newStatus: string) {
                             <td class="px-4 py-3 text-gray-600">{{ order.items.length }} item(s)</td>
                             <td class="px-4 py-3 font-semibold text-gray-800">
                                 Rs. {{ Number(order.total_amount).toLocaleString() }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="text-xs px-2 py-1 rounded-full font-medium capitalize"
+                                    :class="paymentStatusColors[order.payment_status]">
+                                    {{ paymentLabel(order) }}
+                                </span>
                             </td>
                             <td class="px-4 py-3">
                                 <span class="text-xs px-2 py-1 rounded-full font-medium capitalize"
@@ -167,9 +187,14 @@ async function updateStatus(order: Order, newStatus: string) {
                     <span class="font-semibold text-gray-800">
                         Rs. {{ Number(order.total_amount).toLocaleString() }}
                     </span>
-                    <span class="text-gray-500 text-xs">
-                        {{ new Date(order.created_at).toLocaleDateString() }}
+                    <span class="text-xs px-2 py-1 rounded-full font-medium capitalize"
+                        :class="paymentStatusColors[order.payment_status]">
+                        {{ paymentLabel(order) }}
                     </span>
+                </div>
+
+                <div class="text-right text-gray-500 text-xs">
+                    {{ new Date(order.created_at).toLocaleDateString() }}
                 </div>
 
                 <select :value="order.status"
