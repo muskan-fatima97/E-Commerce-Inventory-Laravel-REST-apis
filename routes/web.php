@@ -7,11 +7,12 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnalyticalChartsController;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\WeatherController;
 // Public store routes
 Route::get('/', [ProductController::class, 'HomePage'])->name('home');
 Route::get('/store', [ProductController::class, 'storePage']);
 Route::get('/product/{id}', [ProductController::class, 'productDetailPage']);
-
+Route::get('/api/weather', [WeatherController::class, 'index']);
 // Cart
 Route::post('/api/cart', [CartController::class, 'store']);
 Route::get('/cart', [CartController::class, 'index']);

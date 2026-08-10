@@ -93,14 +93,21 @@ class OrderController extends Controller
     /**
      * Customer: order confirmation / success page
      */
-    public function confirmation($id)
-    {
-        $order = Order::with('items')->findOrFail($id);
+    public function confirmation(Request $request, $id)
+{
+    $order = Order::with('items')->findOrFail($id);
 
-        return Inertia::render('OrderConfirmation', [
-            'order' => $order,
-        ]);
+    $sessionId = $request->session()->getId();
+    $userId = $request->user()?->id;
+
+    if ($order->session_id !== $sessionId && $order->user_id !== $userId) {
+        abort(403, 'You are not authorized to view this order.');
     }
+
+    return Inertia::render('OrderConfirmation', [
+        'order' => $order,
+    ]);
+}
 
     /**
      * Admin: list all orders

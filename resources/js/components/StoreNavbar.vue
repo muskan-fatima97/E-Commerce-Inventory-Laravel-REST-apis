@@ -2,6 +2,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { usePage, router } from '@inertiajs/vue3'
 import { ShoppingCart, User, LogOut, Package } from 'lucide-vue-next'
+import WeatherWidget from '@/components/WeatherWidget.vue'
+
 import axios from 'axios'
 
 const page = usePage()
@@ -37,8 +39,10 @@ function logout() {
                 Closyyy
             </a>
 
+            
             <div class="flex items-center gap-3 lg:order-3">
 
+                <WeatherWidget class="hidden md:flex" />
                 <a href="/cart" class="relative p-2 rounded-lg hover:bg-gray-200 transition">
                     <ShoppingCart class="w-6 h-6 text-gray-700" />
                     <span class="absolute -top-1 -right-1 bg-[#d71208] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
